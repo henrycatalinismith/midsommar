@@ -19,6 +19,9 @@
       body {
         background-color: #0077b5;
         margin: 0;
+        width: 100vw;
+        max-height: 100vh;
+        overflow: hidden;
       }
 
       canvas {
@@ -184,15 +187,10 @@
         }
 
         audio.addEventListener("play", () => {
-          if (!audioCtx) {
-            audioCtx = new AudioContext()
-            analyser = audioCtx.createAnalyser()
-            audioSrc = audioCtx.createMediaElementSource(audio)
-            audioSrc.connect(analyser)
-            analyser.connect(audioCtx.destination)
-            analyser.fftSize = 2048
-          }
-          console.log("lol")
+        })
+
+        audio.addEventListener("error", () => {
+          console.log("error")
         })
 
         audio.addEventListener("pause", () => {
@@ -218,8 +216,20 @@
         button.addEventListener("click", () => {
           button.classList.add("clicked")
           if (audio.paused) {
+
+            if (!audioCtx) {
+              const AudioContext = window.AudioContext || window.webkitAudioContext
+              audioCtx = new AudioContext
+              analyser = audioCtx.createAnalyser()
+              audioSrc = audioCtx.createMediaElementSource(audio)
+              audioSrc.connect(analyser)
+              analyser.connect(audioCtx.destination)
+              analyser.fftSize = 2048
+            }
+
             button.innerText = "⏸"
             audio.play()
+
           } else {
             button.innerText = "▶️"
             audio.pause()
